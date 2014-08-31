@@ -1,0 +1,115 @@
+08/09/2014 - transfix
+
+derived from: 
+https://bitcointalk.org/index.php?topic=149479.0
+http://qt-project.org/wiki/MinGW-64-bit
+
+Sometimes it is useful to run msys shell as an administrator...
+
+mingw64 builds
+--------------
+- miniupnpc
+mingw32-make -f Makefile.mingw init upnpc-static
+
+- openssl-1.0.1h
+from msys:
+./Configure no-idea no-mdc2 no-rc5 no-shared no-dso mingw64 
+make depend && make
+
+- berkeley db
+The build might fail with an issue regarding db_threadid_t.
+Here is a link with the solution: https://bitcointalk.org/index.php?topic=45507.0
+Amounts to changing typedef of db_threadid_t in db.h from pthread_t to u_int32_t.
+from msys:
+cd db-4.8.30.NC/build_unix
+../dist/configure --enable-mingw --enable-cxx --disable-shared --disable-replication
+
+- boost
+from windows cmd:
+bootstrap.bat mingw
+b2 --build-type=complete --with-chrono --with-filesystem --with-program_options --with-system --with-thread --with-regex --with-exception --with-date_time --with-math --with-iostreams toolset=gcc variant=release link=static threading=multi runtime-link=static stage
+
+-protobuf
+from msys:
+./configure --disable-shared
+make
+
+-libpng
+from msys:
+./configure --disable-shared
+make
+cp .libs/libpng16.a .libs/libpng.a
+
+-zlib (sometimes we need it, sometimes one is provided with the compiler)
+from msys:
+make -f win32/Makefile.gcc
+
+-qrencode
+from msys:
+LIBS="../libpng-1.6.12/.libs/libpng.a ../zlib-1.2.8/libz.a" \
+png_CFLAGS="-I../libpng-1.6.12" png_LIBS="-L../libpng-1.6.12/.libs" \
+configure --enable-static --disable-shared --without-tools
+make
+
+-qt5
+from windows cmd:
+qt-build.bat
+mingw32-make
+
+-leveldb (part of bitcoin sources)
+from msys:
+TARGET_OS=NATIVE_WINDOWS make libleveldb.a libmemenv.a
+
+mingw32 builds
+--------------
+- miniupnpc
+mingw32-make -f Makefile.mingw init upnpc-static
+
+- openssl-1.0.1h
+from msys:
+./Configure no-idea no-mdc2 no-rc5 no-shared no-dso mingw
+make depend && make
+
+- berkeley db
+The build might fail with an issue regarding db_threadid_t.
+Here is a link with the solution: https://bitcointalk.org/index.php?topic=45507.0
+Amounts to changing typedef of db_threadid_t from pthread_t to u_int32_t.
+from msys:
+cd db-4.8.30.NC/build_unix
+../dist/configure --enable-mingw --enable-cxx --disable-shared --disable-replication
+
+- boost
+from windows cmd:
+bootstrap.bat mingw
+b2 --build-type=complete --with-chrono --with-filesystem --with-program_options --with-system --with-thread --with-regex --with-exception --with-date_time --with-math --with-iostreams toolset=gcc variant=release link=static threading=multi runtime-link=static stage
+
+-protobuf
+from msys:
+./configure --disable-shared
+make
+
+-libpng
+from msys:
+./configure --disable-shared
+make
+cp .libs/libpng16.a .libs/libpng.a
+
+-zlib (sometimes we need it, sometimes one is provided with the compiler)
+from msys:
+make -f win32/Makefile.gcc
+
+-qrencode
+from msys:
+LIBS="../libpng-1.6.12/.libs/libpng.a ../zlib-1.2.8/libz.a" \
+png_CFLAGS="-I../libpng-1.6.12" png_LIBS="-L../libpng-1.6.12/.libs" \
+./configure --enable-static --disable-shared --without-tools
+make
+
+-qt5
+from windows cmd:
+qt-build.bat
+mingw32-make
+
+-leveldb (part of bitcoin sources)
+from msys:
+TARGET_OS=NATIVE_WINDOWS make libleveldb.a libmemenv.a
